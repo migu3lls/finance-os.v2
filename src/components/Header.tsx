@@ -1,15 +1,11 @@
 "use client";
 
-import { Plus, ShieldCheck } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import type React from "react";
 
-interface HeaderProps {
-	onOpenAddModal: () => void;
-}
-
-export const Header: React.FC<HeaderProps> = ({ onOpenAddModal }) => {
+export const Header: React.FC = () => {
 	return (
 		<header className="sticky top-0 z-40 w-full border-b border-black/[0.05] bg-white/80 backdrop-blur-md transition-all">
 			<div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -63,21 +59,12 @@ export const Header: React.FC<HeaderProps> = ({ onOpenAddModal }) => {
 
 				<div className="flex items-center gap-3">
 					<Link
-						href="/privacy"
-						className="hidden sm:flex items-center gap-1.5 text-xs text-black/50 hover:text-black/80 transition-colors py-1.5 px-3 rounded-full border border-black/[0.05]"
+						href="/dashboard"
+						className="inline-flex items-center gap-2 rounded-full bg-[#0d0d0d] px-4 py-2 text-xs sm:text-sm font-medium text-white shadow-sm transition-all hover:bg-black/90 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#18E299]"
 					>
-						<ShieldCheck className="h-3.5 w-3.5 text-[#0fa76e]" />
-						Privacidade & LGPD
+						<span>Acessar o Sistema</span>
+						<ArrowRight className="h-3.5 w-3.5 text-[#18E299]" />
 					</Link>
-
-					<button
-						type="button"
-						onClick={onOpenAddModal}
-						className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0d0d0d] px-4 py-2 text-xs sm:text-sm font-medium text-white shadow-sm transition-all hover:bg-black/90 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#18E299] focus:ring-offset-2"
-					>
-						<Plus className="h-4 w-4 text-[#18E299]" />
-						<span>Novo Registro</span>
-					</button>
 				</div>
 			</div>
 		</header>

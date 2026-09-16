@@ -2,23 +2,28 @@
 
 import type React from "react";
 import { createContext, useContext, useEffect, useState } from "react";
-import type { BudgetLimit, Transaction } from "@/types/finance";
-import { INITIAL_TRANSACTIONS } from "@/types/initial-data";
+import type { Account, BudgetLimit, Transaction } from "@/types/finance";
+import { INITIAL_ACCOUNTS, INITIAL_TRANSACTIONS } from "@/types/initial-data";
 
 interface FinanceContextType {
 	transactions: Transaction[];
+	accounts: Account[];
 	addTransaction: (tx: Omit<Transaction, "id">) => void;
+	updateTransaction: (id: string, tx: Partial<Transaction>) => void;
 	deleteTransaction: (id: string) => void;
+	addAccount: (acc: Omit<Account, "id">) => void;
 	budgetLimits: BudgetLimit[];
 	updateBudgetLimit: (category: string, limit: number) => void;
 	totalIncome: number;
 	totalExpenses: number;
 	netSavings: number;
+	totalBalance: number;
 	expensesByCategory: {
 		category: string;
 		amount: number;
 		percentage: number;
 	}[];
+	importTransactions: (imported: Omit<Transaction, "id">[]) => void;
 	isLoading: boolean;
 }
 
@@ -26,6 +31,7 @@ const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
 
 export function FinanceProvider({ children }: { children: React.ReactNode }) {
 	const [transactions, setTransactions] = useState<Transaction[]>([]);
+	const [accounts, setAccounts] = useState<Account[]>(INITIAL_ACCOUNTS);
 	const [isLoading, setIsLoading] = useState(true);
 	const [budgetLimits, setBudgetLimits] = useState<BudgetLimit[]>([
 		{ category: "Alimentação & Mercado", limit: 2000 },
@@ -39,24 +45,38 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
 	useEffect(() => {
 		let timer: NodeJS.Timeout;
 		try {
-			const saved = localStorage.getItem("finance_os_transactions");
-			if (saved) {
-				setTransactions(JSON.parse(saved));
+			const savedTx = localStorage.getItem("finance_os_transactions");
+			const savedAcc = localStorage.getItem("finance_os_accounts");
+
+			if (savedTx) {
+				setTransactions(JSON.parse(savedTx));
 			} else {
-				setTransactions(INITIAL_TRANSACTIONS as unknown as Transaction[]);
+				setTransactions(INITIAL_TRANSACTIONS);
+			}
+
+			if (savedAcc) {
+				setAccounts(JSON.parse(savedAcc));
 			}
 		} catch {
-			setTransactions(INITIAL_TRANSACTIONS as unknown as Transaction[]);
+			setTransactions(INITIAL_TRANSACTIONS);
 		}
-		timer = setTimeout(() => setIsLoading(false), 350);
+		timer = setTimeout(() => setIsLoading(false), 250);
 		return () => clearTimeout(timer);
 	}, []);
 
-	const saveToStorage = (updated: Transaction[]) => {
+	const saveTransactions = (updated: Transaction[]) => {
 		try {
 			localStorage.setItem("finance_os_transactions", JSON.stringify(updated));
 		} catch {
-			// fallback silencioso
+			// fallback
+		}
+	};
+
+	const saveAccounts = (updated: Account[]) => {
+		try {
+			localStorage.setItem("finance_os_accounts", JSON.stringify(updated));
+		} catch {
+			// fallback
 		}
 	};
 
@@ -64,16 +84,61 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
 		const tx: Transaction = {
 			...newTx,
 			id: `tx-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+			status: newTx.status || "completed",
 		};
 		const updated = [tx, ...transactions];
 		setTransactions(updated);
-		saveToStorage(updated);
+		saveTransactions(updated);
+
+		// Atualiza saldo da conta vinculada se aplicável
+		if (tx.accountId) {
+			setAccounts((prevAcc) => {
+				const next = prevAcc.map((acc) => {
+					if (acc.id === tx.accountId) {
+						const delta = tx.type === "income" ? tx.amount : -tx.amount;
+						return { ...acc, balance: acc.balance + delta };
+					}
+					return acc;
+				});
+				saveAccounts(next);
+				return next;
+			});
+		}
+	};
+
+	const updateTransaction = (id: string, patch: Partial<Transaction>) => {
+		const updated = transactions.map((t) =>
+			t.id === id ? { ...t, ...patch } : t,
+		);
+		setTransactions(updated);
+		saveTransactions(updated);
 	};
 
 	const deleteTransaction = (id: string) => {
 		const updated = transactions.filter((t) => t.id !== id);
 		setTransactions(updated);
-		saveToStorage(updated);
+		saveTransactions(updated);
+	};
+
+	const addAccount = (acc: Omit<Account, "id">) => {
+		const newAcc: Account = {
+			...acc,
+			id: `acc-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+		};
+		const updated = [...accounts, newAcc];
+		setAccounts(updated);
+		saveAccounts(updated);
+	};
+
+	const importTransactions = (importedList: Omit<Transaction, "id">[]) => {
+		const newEntries: Transaction[] = importedList.map((item, idx) => ({
+			...item,
+			id: `tx-imp-${Date.now()}-${idx}-${Math.random().toString(36).substring(2, 5)}`,
+			status: "completed",
+		}));
+		const updated = [...newEntries, ...transactions];
+		setTransactions(updated);
+		saveTransactions(updated);
 	};
 
 	const updateBudgetLimit = (category: string, limit: number) => {
@@ -91,6 +156,8 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
 		.reduce((acc, curr) => acc + curr.amount, 0);
 
 	const netSavings = totalIncome - totalExpenses;
+
+	const totalBalance = accounts.reduce((acc, curr) => acc + curr.balance, 0);
 
 	const expenseMap = transactions
 		.filter((t) => t.type === "expense")
@@ -114,14 +181,19 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
 		<FinanceContext.Provider
 			value={{
 				transactions,
+				accounts,
 				addTransaction,
+				updateTransaction,
 				deleteTransaction,
+				addAccount,
 				budgetLimits,
 				updateBudgetLimit,
 				totalIncome,
 				totalExpenses,
 				netSavings,
+				totalBalance,
 				expensesByCategory,
+				importTransactions,
 				isLoading,
 			}}
 		>
