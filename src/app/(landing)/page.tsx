@@ -17,7 +17,7 @@ export default function Home() {
 	return (
 		<FinanceProvider>
 			<div className="flex min-h-screen flex-col bg-white">
-				<Header />
+				<Header onOpenAddModal={() => setIsModalOpen(true)} />
 
 				<main className="flex-1">
 					<HeroDashboard />

@@ -1,6 +1,7 @@
 "use client";
 
-import { TrendingDown, TrendingUp, Wallet } from "lucide-react";
+import { ArrowRight, TrendingDown, TrendingUp, Wallet } from "lucide-react";
+import Link from "next/link";
 import type React from "react";
 import { useFinance } from "@/context/FinanceContext";
 
@@ -44,6 +45,17 @@ export const HeroDashboard: React.FC = () => {
 						margem de liquidez mensal com clareza radical e design de alto
 						padrão.
 					</p>
+
+					{/* Botão de Chamada Principal para o Sistema */}
+					<div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+						<Link
+							href="/dashboard"
+							className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-full bg-[#0d0d0d] px-8 py-3.5 text-sm font-semibold text-white shadow-md hover:bg-black/90 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-[#18E299]"
+						>
+							<span>Acessar o Sistema Operacional</span>
+							<ArrowRight className="h-4 w-4 text-[#18E299]" />
+						</Link>
+					</div>
 				</div>
 
 				{/* 3 Metric Cards Minimalistas */}
