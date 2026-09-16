@@ -1,0 +1,117 @@
+export const CATEGORY_COLORS: Record<
+	string,
+	{ bg: string; text: string; fill: string }
+> = {
+	"Alimentação & Mercado": {
+		bg: "bg-emerald-50",
+		text: "text-emerald-700",
+		fill: "#18E299",
+	},
+	"Moradia & Contas": {
+		bg: "bg-blue-50",
+		text: "text-blue-700",
+		fill: "#3772cf",
+	},
+	"Transporte & Mobilidade": {
+		bg: "bg-amber-50",
+		text: "text-amber-700",
+		fill: "#c37d0d",
+	},
+	"Lazer & Entretenimento": {
+		bg: "bg-purple-50",
+		text: "text-purple-700",
+		fill: "#8b5cf6",
+	},
+	"Saúde & Bem-estar": {
+		bg: "bg-rose-50",
+		text: "text-rose-700",
+		fill: "#d45656",
+	},
+	"Educação & Livros": {
+		bg: "bg-cyan-50",
+		text: "text-cyan-700",
+		fill: "#06b6d4",
+	},
+	"Assinaturas & Software": {
+		bg: "bg-indigo-50",
+		text: "text-indigo-700",
+		fill: "#6366f1",
+	},
+	Investimentos: { bg: "bg-teal-50", text: "text-teal-700", fill: "#0fa76e" },
+	Outros: { bg: "bg-stone-50", text: "text-stone-700", fill: "#78716c" },
+};
+
+export const INITIAL_TRANSACTIONS = [
+	{
+		id: "tx-1",
+		description: "Supermercado Mensal",
+		amount: 1240.5,
+		type: "expense",
+		category: "Alimentação & Mercado",
+		date: "2026-09-14",
+		paymentMethod: "Cartão de Crédito",
+	},
+	{
+		id: "tx-2",
+		description: "Aluguel & Condomínio",
+		amount: 2850.0,
+		type: "expense",
+		category: "Moradia & Contas",
+		date: "2026-09-05",
+		paymentMethod: "PIX",
+	},
+	{
+		id: "tx-3",
+		description: "Gasolina & Estacionamento",
+		amount: 320.0,
+		type: "expense",
+		category: "Transporte & Mobilidade",
+		date: "2026-09-12",
+		paymentMethod: "Débito",
+	},
+	{
+		id: "tx-4",
+		description: "Jantar Especial",
+		amount: 215.0,
+		type: "expense",
+		category: "Lazer & Entretenimento",
+		date: "2026-09-13",
+		paymentMethod: "Cartão de Crédito",
+	},
+	{
+		id: "tx-5",
+		description: "Plano de Saúde",
+		amount: 480.0,
+		type: "expense",
+		category: "Saúde & Bem-estar",
+		date: "2026-09-02",
+		paymentMethod: "Boleto",
+	},
+	{
+		id: "tx-6",
+		description: "Assinaturas Cloud & Dev Tools",
+		amount: 149.9,
+		type: "expense",
+		category: "Assinaturas & Software",
+		date: "2026-09-10",
+		paymentMethod: "Cartão de Crédito",
+	},
+	{
+		id: "tx-7",
+		description: "Aporte Tesouro Direto",
+		amount: 1500.0,
+		type: "expense",
+		category: "Investimentos",
+		date: "2026-09-08",
+		paymentMethod: "PIX",
+	},
+	{
+		id: "tx-8",
+		description: "Salário & Faturamento",
+		amount: 10500.0,
+		type: "income",
+		category: "Outros",
+		date: "2026-09-05",
+		paymentMethod: "PIX",
+	},
+] as const;
